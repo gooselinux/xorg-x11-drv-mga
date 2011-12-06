@@ -1,0 +1,18 @@
+diff -up xf86-video-mga-1.4.10/src/mga_driver.c.jx xf86-video-mga-1.4.10/src/mga_driver.c
+--- xf86-video-mga-1.4.10/src/mga_driver.c.jx	2009-07-28 14:44:44.000000000 -0400
++++ xf86-video-mga-1.4.10/src/mga_driver.c	2009-07-28 14:47:57.000000000 -0400
+@@ -2013,8 +2013,12 @@ MGAPreInit(ScrnInfoPtr pScrn, int flags)
+      * We support both 24bpp and 32bpp layouts, so indicate that.
+      */
+ 
+-    /* Prefer 32bpp */
+-    flags24 = Support24bppFb | Support32bppFb | PreferConvert24to32;
++    flags24 = Support24bppFb | Support32bppFb;
++
++    if (pMga->Chipset == PCI_CHIP_MGAG200_SE_A_PCI)
++	flags24 |= SupportConvert32to24 | PreferConvert32to24;
++    else
++	flags24 |= PreferConvert24to32;
+ 
+     if (pMga->SecondCrtc)
+ 	flags24 = Support32bppFb;

@@ -1,0 +1,150 @@
+--- xf86-video-mga-1.4.6.1/src/clientlx.c.jx	2006-11-08 12:16:44.000000000 -0500
++++ xf86-video-mga-1.4.6.1/src/clientlx.c	2007-02-26 18:12:57.000000000 -0500
+@@ -16,6 +16,21 @@
+ #include "client.h"
+ #include "mga.h"
+ 
++typedef LPVOID (*gcp_t)(LPBOARDHANDLE);
++
++static LPVOID
++getClientPointer(LPBOARDHANDLE pBoard)
++{
++    static gcp_t gcp = NULL;
++
++    gcp = LoaderSymbol("MGAGetClientPointer");
++
++    if (gcp)
++	return gcp(pBoard);
++    else
++	return NULL;
++}
++
+ CLIENTTABLE ClientFunctions = {
+     (ULONG (DECL *)(LPVOID,ULONG,LPVOID))    ClientReadConfigSpaceByte,
+     (ULONG (DECL *)(LPVOID,ULONG,LPVOID))    ClientReadConfigSpaceDword,
+@@ -62,7 +77,7 @@
+ ULONG ClientReadConfigSpaceByte(LPBOARDHANDLE pBoard, ULONG ulOffset,
+                                 UCHAR *pucByte)
+ {
+-    LPCLIENTDATA pClientStruct = MGAGetClientPointer(pBoard);
++    LPCLIENTDATA pClientStruct = getClientPointer(pBoard);
+     MGAPtr pMga = (MGAPtr)pClientStruct->pMga;
+ 
+     ASSERT_HANDLER(pBoard);
+@@ -90,7 +105,7 @@
+ ULONG ClientReadConfigSpaceDword(LPBOARDHANDLE pBoard, ULONG ulOffset,
+                                  ULONG *pulDword)
+ {
+-    LPCLIENTDATA pClientStruct = MGAGetClientPointer(pBoard);
++    LPCLIENTDATA pClientStruct = getClientPointer(pBoard);
+     MGAPtr pMga = (MGAPtr)pClientStruct->pMga;
+ 
+     ASSERT_HANDLER(pBoard);
+@@ -118,7 +133,7 @@
+ ULONG ClientWriteConfigSpaceByte(LPBOARDHANDLE pBoard, ULONG ulOffset,
+                                  UCHAR ucByte)
+ {
+-    LPCLIENTDATA pClientStruct = MGAGetClientPointer(pBoard);
++    LPCLIENTDATA pClientStruct = getClientPointer(pBoard);
+     MGAPtr pMga = (MGAPtr)pClientStruct->pMga;
+ 
+     ASSERT_HANDLER(pBoard);
+@@ -146,7 +161,7 @@
+ ULONG ClientWriteConfigSpaceDword(LPBOARDHANDLE pBoard, ULONG ulOffset,
+                                   ULONG ulDword)
+ {
+-    LPCLIENTDATA pClientStruct = MGAGetClientPointer(pBoard);
++    LPCLIENTDATA pClientStruct = getClientPointer(pBoard);
+     MGAPtr pMga = (MGAPtr)pClientStruct->pMga;
+ 
+     ASSERT_HANDLER(pBoard);
+@@ -174,7 +189,7 @@
+ \******************************************************************************/
+ ULONG ClientOpenRegisterBase(LPBOARDHANDLE pBoard, ULONG ulAddress, ULONG ulSize)
+ {
+-    LPCLIENTDATA pClientStruct = MGAGetClientPointer(pBoard);
++    LPCLIENTDATA pClientStruct = getClientPointer(pBoard);
+     MGAPtr pMga = (MGAPtr)pClientStruct->pMga;
+ 
+     ASSERT_HANDLER(pBoard);
+@@ -223,7 +238,7 @@
+ ULONG ClientReadRegisterByte(LPBOARDHANDLE pBoard, ULONG ulOffset,
+                              UCHAR *pucByte)
+ {
+-    LPCLIENTDATA pClientStruct = MGAGetClientPointer(pBoard);
++    LPCLIENTDATA pClientStruct = getClientPointer(pBoard);
+ 
+     ASSERT_HANDLER(pBoard);
+ 
+@@ -251,7 +266,7 @@
+ ULONG ClientReadRegisterDword(LPBOARDHANDLE pBoard, ULONG ulOffset,
+                               ULONG *pulDword)
+ {
+-    LPCLIENTDATA pClientStruct = MGAGetClientPointer(pBoard);
++    LPCLIENTDATA pClientStruct = getClientPointer(pBoard);
+ 
+     ASSERT_HANDLER(pBoard);
+ 
+@@ -278,7 +293,7 @@
+ ULONG ClientWriteRegisterByte(LPBOARDHANDLE pBoard, ULONG ulOffset,
+                               UCHAR ucByte)
+ {
+-    LPCLIENTDATA pClientStruct = MGAGetClientPointer(pBoard);
++    LPCLIENTDATA pClientStruct = getClientPointer(pBoard);
+ 
+     ASSERT_HANDLER(pBoard);
+ 
+@@ -305,7 +320,7 @@
+ ULONG ClientWriteRegisterDword(LPBOARDHANDLE pBoard, ULONG ulOffset,
+                                ULONG ulDword)
+ {
+-    LPCLIENTDATA pClientStruct = MGAGetClientPointer(pBoard);
++    LPCLIENTDATA pClientStruct = getClientPointer(pBoard);
+ 
+     ASSERT_HANDLER(pBoard);
+ 
+@@ -331,7 +346,7 @@
+ \******************************************************************************/
+ ULONG ClientOpenMemoryBase(LPBOARDHANDLE pBoard, ULONG ulAddress, ULONG ulSize)
+ {
+-    LPCLIENTDATA pClientStruct = MGAGetClientPointer(pBoard);
++    LPCLIENTDATA pClientStruct = getClientPointer(pBoard);
+     MGAPtr pMga = (MGAPtr) pClientStruct->pMga;
+ 
+     ASSERT_HANDLER(pBoard);
+@@ -377,7 +392,7 @@
+ \******************************************************************************/
+ ULONG ClientReadMemoryByte(LPBOARDHANDLE pBoard, ULONG ulOffset, UCHAR *pucByte)
+ {
+-    LPCLIENTDATA pClientStruct = MGAGetClientPointer(pBoard);
++    LPCLIENTDATA pClientStruct = getClientPointer(pBoard);
+ 
+     ASSERT_HANDLER(pBoard);
+ 
+@@ -404,7 +419,7 @@
+ ULONG ClientReadMemoryDword(LPBOARDHANDLE pBoard, ULONG ulOffset,
+                             ULONG *pulDword)
+ {
+-    LPCLIENTDATA pClientStruct = MGAGetClientPointer(pBoard);
++    LPCLIENTDATA pClientStruct = getClientPointer(pBoard);
+ 
+     ASSERT_HANDLER(pBoard);
+ 
+@@ -430,7 +445,7 @@
+ \******************************************************************************/
+ ULONG ClientWriteMemoryByte(LPBOARDHANDLE pBoard, ULONG ulOffset, UCHAR ucByte)
+ {
+-    LPCLIENTDATA pClientStruct = MGAGetClientPointer(pBoard);
++    LPCLIENTDATA pClientStruct = getClientPointer(pBoard);
+ 
+     ASSERT_HANDLER(pBoard);
+ 
+@@ -457,7 +472,7 @@
+ ULONG ClientWriteMemoryDword(LPBOARDHANDLE pBoard, ULONG ulOffset,
+                             ULONG ulDword)
+ {
+-    LPCLIENTDATA pClientStruct = MGAGetClientPointer(pBoard);
++    LPCLIENTDATA pClientStruct = getClientPointer(pBoard);
+ 
+     ASSERT_HANDLER(pBoard);
+ 
